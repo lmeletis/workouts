@@ -1,10 +1,10 @@
 export type Units = 'imperial' | 'metric';
 export type Experience = 'novice' | 'intermediate' | 'advanced';
-export type Role = 'anchor' | 'accessory' | 'dynamic' | 'core';
+export type Role = 'anchor' | 'accessory' | 'dynamic' | 'core' | 'prehab';
 export type Rating = 'easy' | 'right' | 'hard';
 export type Muscle =
   | 'abdominals' | 'abductors' | 'adductors' | 'biceps' | 'calves' | 'chest' | 'forearms' | 'glutes' | 'hamstrings'
-  | 'lats' | 'lower back' | 'middle back' | 'neck' | 'quadriceps' | 'shoulders' | 'traps' | 'triceps';
+  | 'lats' | 'lower back' | 'middle back' | 'neck' | 'quadriceps' | 'serratus' | 'shoulders' | 'traps' | 'triceps';
 export type AnchorLift = 'squat' | 'bench' | 'deadlift' | 'ohp';
 
 export interface Profile {
@@ -20,6 +20,8 @@ export interface Profile {
   kettlebells: number[];
   dumbbellMax: number;
   limitations: string;
+  /** Serratus + shoulder-blade block on every lifting day (on unless set to false). */
+  shoulderBlock?: boolean;
   /** ISO date (YYYY-MM-DD) of the Monday the 12-week cycle started. */
   startDate: string;
   cycle: number;

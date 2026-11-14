@@ -45,6 +45,21 @@ describe('program', () => {
   });
 });
 
+describe('shoulder block', () => {
+  it('adds light serratus work after the primer on lifting days', () => {
+    const w = buildSession(base(), 'upperA', '2026-11-18');
+    const block = w.exercises.filter((e) => e.role === 'prehab');
+    expect(block.map((e) => e.exId)).toEqual(['serratusPunch', 'scaption', 'bandER']);
+    expect(w.exercises.findIndex((e) => e.role === 'prehab')).toBe(1);
+    expect(block[0].sets.every((x) => x.targetWeight <= 20)).toBe(true);
+  });
+
+  it('can be turned off', () => {
+    const s = { ...base(), profile: { ...profile, shoulderBlock: false } };
+    expect(buildSession(s, 'upperA', '2026-11-18').exercises.some((e) => e.role === 'prehab')).toBe(false);
+  });
+});
+
 describe('feedback', () => {
   const finish = (s: AppState, rating: 'easy' | 'right' | 'hard', hit = true, pain = false) => {
     const w = buildSession(s, 'lowerA', '2026-11-16');

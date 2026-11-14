@@ -112,7 +112,7 @@ export default function Today({ go }: { go: Go }) {
               <div className="grid2">
                 {preview.exercises.map((e, i) => (
                   <div key={i} style={{ border: '1px solid var(--line)', borderRadius: 12, padding: '12px 14px' }}>
-                    <div className="between"><span className="lbl">{e.flowId ? 'Mobility' : e.role === 'anchor' ? 'Anchor lift' : e.role === 'dynamic' ? 'Dynamic slot' : e.role === 'core' ? 'Core' : 'Accessory'}</span>
+                    <div className="between"><span className="lbl">{e.flowId ? 'Mobility' : e.role === 'anchor' ? 'Anchor lift' : e.role === 'dynamic' ? 'Dynamic slot' : e.role === 'core' ? 'Core' : e.role === 'prehab' ? 'Shoulder · serratus' : 'Accessory'}</span>
                       {e.flowId && <span className="small muted">{flowMinutes(e.flowId, hipFocus)} min</span>}</div>
                     <div style={{ fontWeight: 600, marginTop: 4 }}>{e.flowId ? flowName(e.flowId) : ex(e.exId).name}</div>
                     <div className="small muted">{e.flowId ? flowSteps(e.flowId, hipFocus).filter((x) => x.side !== 'Right').map((x) => x.move.name).join(' · ') : `${fmtTarget(e, p.units)}${e.rpeTarget ? ` · RPE ${e.rpeTarget}` : ''}`}</div>

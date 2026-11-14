@@ -1,6 +1,6 @@
 import { ex } from '../lib/library';
 import {
-  addDays, clampWeek, DAYS, DYNAMIC_ROTATION, PHASE_LABEL, PHASES, SCHEDULES, todayISO, TOTAL_WEEKS, weekOf, resolveSlotEx,
+  addDays, clampWeek, DAYS, DYNAMIC_ROTATION, SHOULDER_BLOCK, PHASE_LABEL, PHASES, SCHEDULES, todayISO, TOTAL_WEEKS, weekOf, resolveSlotEx,
 } from '../lib/program';
 import { unitW } from '../lib/progression';
 import { useStore } from '../lib/store';
@@ -87,6 +87,15 @@ export default function Program({ go }: { go: Go }) {
               </div>
             ))}
           </section>
+          {p.shoulderBlock !== false && (
+            <section className="card">
+              <p className="lbl">Shoulder · serratus block · every lifting day</p>
+              {Object.entries(SHOULDER_BLOCK).filter(([d]) => sched.includes(d)).map(([d, ids]) => (
+                <div key={d} className="small"><strong>{DAYS[d].name.split(' — ')[0]}</strong> <span style={{ color: 'var(--text2)' }}>{ids.map((i) => ex(s.swaps[`${d}:sh${ids.indexOf(i)}`] ?? i).name).join(' · ')}</span></div>
+              ))}
+              <span className="small muted">2–3 sets of 10–15, slow and light (RPE 5–6). Skip or swap anything that hurts, and follow your PT’s plan first.</span>
+            </section>
+          )}
           <section className="card">
             <p className="lbl">Progression rules</p>
             <ul className="small" style={{ margin: 0, paddingLeft: 18, color: 'var(--text2)', lineHeight: 1.55 }}>

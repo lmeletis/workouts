@@ -11,7 +11,7 @@ const GROUPS = ['Quads', 'Hamstrings', 'Glutes', 'Hips', 'Chest', 'Back', 'Shoul
 type Group = (typeof GROUPS)[number];
 const GROUP_OF: Record<Muscle, Group> = {
   quadriceps: 'Quads', hamstrings: 'Hamstrings', glutes: 'Glutes', adductors: 'Hips', abductors: 'Hips', chest: 'Chest',
-  lats: 'Back', 'middle back': 'Back', 'lower back': 'Back', traps: 'Back', neck: 'Back', shoulders: 'Shoulders',
+  serratus: 'Shoulders', lats: 'Back', 'middle back': 'Back', 'lower back': 'Back', traps: 'Back', neck: 'Back', shoulders: 'Shoulders',
   biceps: 'Arms', triceps: 'Arms', forearms: 'Arms', abdominals: 'Core', calves: 'Calves',
 };
 

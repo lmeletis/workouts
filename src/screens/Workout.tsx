@@ -7,7 +7,7 @@ import { setState, uid, useStore } from '../lib/store';
 import type { AppState, LoggedExercise, Role, WorkoutLog } from '../lib/types';
 import { beep, mmss, Modal, NumInput, primeAudio, useNow, useWakeLock, type Go } from '../ui';
 
-const ROLE_LABEL: Record<Role, string> = { anchor: 'Anchor lift', accessory: 'Accessory', dynamic: 'Dynamic slot', core: 'Core' };
+const ROLE_LABEL: Record<Role, string> = { anchor: 'Anchor lift', accessory: 'Accessory', dynamic: 'Dynamic slot', core: 'Core', prehab: 'Shoulder · serratus' };
 
 function lastPerformance(s: AppState, exId: string) {
   for (let i = s.workouts.length - 1; i >= 0; i--) {

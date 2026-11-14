@@ -169,6 +169,16 @@ export const DAYS: Record<string, DayTemplate> = {
   },
 };
 
+/** Serratus + shoulder-blade block, done after the hip primer on each lifting day. */
+export const SHOULDER_BLOCK: Record<string, string[]> = {
+  lowerA: ['pushupPlus', 'wallSlide', 'bandER'],
+  upperA: ['serratusPunch', 'scaption', 'bandER'],
+  lowerB: ['bandPunch', 'wallSlide', 'bearHold'],
+  upperB: ['pushupPlus', 'serratusPunch', 'bandER'],
+  fullB: ['serratusPunch', 'wallSlide', 'bandER'],
+  armsKb: ['bandPunch', 'scaption', 'bearHold'],
+};
+
 /** Monday → Sunday. */
 export const SCHEDULES: Record<3 | 4 | 5, string[]> = {
   3: ['lowerA', 'mobilityWalk', 'upperA', 'dunes', 'fullB', 'mobility', 'ruck'],
@@ -203,7 +213,9 @@ export function prescribe(role: Role, week: number, exId: string, p: Profile): P
   const deload = phase === 'deload';
   let rx: Prescription;
 
-  if (def.timed) {
+  if (role === 'prehab') {
+    rx = { sets: week >= 5 ? 3 : 2, range: def.timed ? [20, 40] : [10, 15], rpe: '5–6', rest: 30 };
+  } else if (def.timed) {
     rx = { sets: 3, range: [20, 40], rpe: '7', rest: 45 };
   } else if (role === 'anchor' && def.equip === 'bodyweight') {
     rx = { sets: 3 + (wib > 0 ? 1 : 0), range: [5, 10], rpe: '8', rest: 120 };
@@ -358,6 +370,9 @@ export function buildSession(s: AppState, dayId: string, iso: string, short = fa
   const flowItem = (flowId: string): LoggedExercise => ({ exId: `flow:${flowId}`, role: 'core', repRange: [0, 0], restSec: 0, sets: [], flowId });
 
   if (day.primer) exercises.push(flowItem(day.primer));
+  if (p.shoulderBlock !== false) {
+    (SHOULDER_BLOCK[dayId] ?? []).forEach((id, i) => exercises.push(buildExercise(s, s.swaps[`${dayId}:sh${i}`] ?? id, 'prehab', week, `${dayId}:sh${i}`, short ? 1 : 0)));
+  }
   let slots = (day.slots ?? []).map((slot, i) => ({ slot, i }));
   if (short) {
     let acc = 0;

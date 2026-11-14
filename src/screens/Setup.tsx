@@ -69,6 +69,7 @@ export default function Setup({ go, firstRun }: { go: Go; firstRun?: boolean }) 
             ['Lifting days / week', <Seg key="d" label="Days" value={d.days} onChange={(v) => set('days', v)} options={[{ v: 3, t: '3' }, { v: 4, t: '4' }, { v: 5, t: '5' }]} />],
             ['Session length', <Seg key="l" label="Session length" value={d.sessionMin} onChange={(v) => set('sessionMin', v)} options={[{ v: 45, t: '45 min' }, { v: 60, t: '60 min' }, { v: 75, t: '75 min' }]} />],
             ['Units', <Seg key="u" label="Units" value={d.units} onChange={(v) => set('units', v)} options={[{ v: 'imperial', t: 'lb · mi · °F' }, { v: 'metric', t: 'kg · km · °C' }]} />],
+            ['Shoulder / serratus block', <Seg key="sb" label="Shoulder block" value={d.shoulderBlock !== false ? 'on' : 'off'} onChange={(v) => set('shoulderBlock', v === 'on')} options={[{ v: 'on', t: 'Every lifting day' }, { v: 'off', t: 'Off' }]} />],
             ['Cold exposure experience', <Seg key="c" label="Cold exposure" value={d.coldExperience} onChange={(v) => set('coldExperience', v)} options={[{ v: 'new', t: 'New' }, { v: 'some', t: 'Some' }, { v: 'regular', t: 'Regular' }]} />],
           ].map(([label, el]) => (
             <div key={label as string} className="col" style={{ gap: 6 }}><span className="lbl">{label}</span>{el}</div>
