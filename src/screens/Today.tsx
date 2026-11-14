@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ExerciseInfoModal, muscleLabel } from '../exercise-ui';
 import { ex, flowMinutes, flowSteps } from '../lib/library';
 import {
   addDays, buildSession, DAYS, dayFor, duneTarget, flowName, mondayOf, MOBILITY_GOAL_MIN, outdoorGoal, phaseOf,
@@ -42,6 +43,7 @@ export default function Today({ go }: { go: Go }) {
   const phase = phaseOf(week);
   const day = dayFor(s, today);
   const [swapOpen, setSwapOpen] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
   const preview = useMemo(() => (day.kind === 'lift' ? buildSession(s, day.id, today) : null), [s, day.id, today]);
   const monday = mondayOf(today);
   const stats = useMemo(() => weekStats(s, monday), [s, monday]);
@@ -114,6 +116,12 @@ export default function Today({ go }: { go: Go }) {
                       {e.flowId && <span className="small muted">{flowMinutes(e.flowId, hipFocus)} min</span>}</div>
                     <div style={{ fontWeight: 600, marginTop: 4 }}>{e.flowId ? flowName(e.flowId) : ex(e.exId).name}</div>
                     <div className="small muted">{e.flowId ? flowSteps(e.flowId, hipFocus).filter((x) => x.side !== 'Right').map((x) => x.move.name).join(' · ') : `${fmtTarget(e, p.units)}${e.rpeTarget ? ` · RPE ${e.rpeTarget}` : ''}`}</div>
+                    {!e.flowId && (
+                      <div className="between" style={{ marginTop: 6 }}>
+                        <span className="small" style={{ color: 'var(--accent-dark)' }}>{ex(e.exId).muscles.map(muscleLabel).join(', ')}</span>
+                        <button className="link small" onClick={() => setInfo(e.exId)}>How to</button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -214,6 +222,7 @@ export default function Today({ go }: { go: Go }) {
         </aside>
       </div>
 
+      {info && <ExerciseInfoModal id={info} onClose={() => setInfo(null)} />}
       {swapOpen && (
         <Modal title="Swap today’s session" onClose={() => setSwapOpen(false)}>
           <p className="small muted">Scheduled: {DAYS[scheduledDay(p, today)].name}</p>

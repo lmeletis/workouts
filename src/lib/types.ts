@@ -2,7 +2,9 @@ export type Units = 'imperial' | 'metric';
 export type Experience = 'novice' | 'intermediate' | 'advanced';
 export type Role = 'anchor' | 'accessory' | 'dynamic' | 'core';
 export type Rating = 'easy' | 'right' | 'hard';
-export type Muscle = 'quads' | 'hamstrings' | 'glutes' | 'chest' | 'back' | 'shoulders' | 'arms' | 'core';
+export type Muscle =
+  | 'abdominals' | 'abductors' | 'adductors' | 'biceps' | 'calves' | 'chest' | 'forearms' | 'glutes' | 'hamstrings'
+  | 'lats' | 'lower back' | 'middle back' | 'neck' | 'quadriceps' | 'shoulders' | 'traps' | 'triceps';
 export type AnchorLift = 'squat' | 'bench' | 'deadlift' | 'ohp';
 
 export interface Profile {

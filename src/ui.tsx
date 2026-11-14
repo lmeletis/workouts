@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 export type Screen =
   | { name: 'today' }
   | { name: 'program' }
+  | { name: 'library' }
   | { name: 'outdoor'; type?: string; recovery?: boolean }
   | { name: 'progress' }
   | { name: 'setup' }
@@ -15,13 +16,14 @@ export type Go = (s: Screen) => void;
 const ICONS: Record<string, ReactNode> = {
   today: <path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />,
   program: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+  library: <path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11" />,
   outdoor: <path d="M2 16c3-3 5-3 8 0s5 3 8 0 3-2 4-1M5 9l4-5 4 5 3-3 4 4" />,
   progress: <path d="M4 20V11M10 20V5M16 20v-7M21 20H3" />,
   setup: <><circle cx="12" cy="8" r="4" /><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6" /></>,
 };
 
 const NAV: [Screen['name'], string][] = [
-  ['today', 'Today'], ['program', 'Program'], ['outdoor', 'Outdoor'], ['progress', 'Progress'], ['setup', 'Profile'],
+  ['today', 'Today'], ['program', 'Program'], ['library', 'Exercises'], ['outdoor', 'Outdoor'], ['progress', 'Progress'], ['setup', 'Profile'],
 ];
 
 export function SideNav({ current, go }: { current: string; go: Go }) {

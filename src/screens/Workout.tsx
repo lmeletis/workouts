@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { EXERCISES, ex, flowMinutes, flowSteps } from '../lib/library';
+import { ExerciseInfoModal, ExercisePicker, MuscleChips, MuscleMap, muscleLabel } from '../exercise-ui';
+import { EXERCISES, ex, flowMinutes, flowSteps, imgUrls } from '../lib/library';
 import { buildExercise, flowName, plates, stepLoad } from '../lib/program';
 import { fmtLoad, fmtTarget, unitW, workSets } from '../lib/progression';
 import { setState, uid, useStore } from '../lib/store';
@@ -37,7 +38,8 @@ export default function Workout({ go }: { go: Go }) {
   const [setIdx, setSetIdx] = useState(() => firstOpenSet(le));
   const [entry, setEntry] = useState({ weight: 0, reps: 0, rpe: undefined as number | undefined });
   const [rest, setRest] = useState<{ end: number; total: number } | null>(null);
-  const [modal, setModal] = useState<null | 'history' | 'swap' | 'add' | 'finish'>(null);
+  const [modal, setModal] = useState<null | 'history' | 'swap' | 'add' | 'finish' | 'howto'>(null);
+  const [pick, setPick] = useState<string | null>(null);
   const now = useNow(true);
   const beeped = useRef(false);
   useWakeLock(true);
@@ -174,10 +176,11 @@ export default function Workout({ go }: { go: Go }) {
                   <div>
                     <p className="lbl ac">{ROLE_LABEL[le.role]} · target {fmtTarget(le, w.units)}{le.rpeTarget ? ` @ RPE ${le.rpeTarget}` : ''}</p>
                     <h1 className="h1" style={{ marginTop: 4 }}>{def.name}</h1>
-                    <p className="small muted" style={{ marginTop: 4 }}>Cue: {def.cue}</p>
+                    {def.cue && <p className="small muted" style={{ marginTop: 4 }}>Cue: {def.cue}</p>}
+                    <div style={{ marginTop: 8 }}><MuscleChips d={def} small /></div>
                   </div>
                   <div className="row">
-                    <a className="btn2" style={{ textDecoration: 'none' }} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(def.name + ' exercise form')}`} target="_blank" rel="noreferrer">Demo</a>
+                    <button className="btn2" onClick={() => setModal('howto')}>How to</button>
                     <button className="btn2" onClick={() => setModal('history')}>History</button>
                     <button className="btn2" onClick={() => setModal('swap')}>Swap</button>
                   </div>
@@ -312,19 +315,25 @@ export default function Workout({ go }: { go: Go }) {
           setModal(null);
         }} />
       )}
-      {modal === 'add' && (
+      {modal === 'howto' && le && !le.flowId && <ExerciseInfoModal id={le.exId} onClose={() => setModal(null)} />}
+      {modal === 'add' && !pick && (
         <Modal title="Add exercise" onClose={() => setModal(null)}>
-          {Object.values(EXERCISES).map((d) => (
-            <button key={d.id} className="optrow" onClick={() => {
-              const fresh = buildExercise(s, d.id, d.timed ? 'core' : 'accessory', w.week);
+          <ExercisePicker onSelect={setPick} />
+        </Modal>
+      )}
+      {modal === 'add' && pick && (
+        <ExerciseInfoModal id={pick} onClose={() => setPick(null)} action={
+          <div className="row">
+            <button className="btn" onClick={() => {
+              const fresh = buildExercise(s, pick, ex(pick).timed ? 'core' : 'accessory', w.week);
               update((x) => { x.exercises.push(fresh); });
+              setPick(null);
               setModal(null);
               selectEx(w.exercises.length);
-            }}>
-              <span><strong>{d.name}</strong><br /><span className="small muted">{d.muscles.join(', ')} · {d.equip}</span></span>
-            </button>
-          ))}
-        </Modal>
+            }}>Add to workout</button>
+            <button className="btn2" onClick={() => setPick(null)}>Back to list</button>
+          </div>
+        } />
       )}
       {modal === 'finish' && (
         <Modal title="Finish early?" onClose={() => setModal(null)}>
@@ -366,7 +375,8 @@ function HistoryList({ s, exId }: { s: AppState; exId: string }) {
 function SwapModal({ s, le, onClose, onPick }: { s: AppState; le: LoggedExercise; week: number; onClose: () => void; onPick: (id: string, keep: boolean) => void }) {
   const def = ex(le.exId);
   const [keep, setKeep] = useState(true);
-  const alts = [...new Set([...def.alts, ...Object.values(EXERCISES).filter((d) => d.id !== def.id && d.muscles[0] === def.muscles[0]).map((d) => d.id)])];
+  const [browse, setBrowse] = useState(false);
+  const alts = [...new Set([...def.alts, ...Object.values(EXERCISES).filter((d) => !d.catalog && d.id !== def.id && d.muscles[0] === def.muscles[0]).map((d) => d.id)])];
   return (
     <Modal title={`Swap ${def.name}`} onClose={onClose}>
       {le.slotKey && (
@@ -375,16 +385,22 @@ function SwapModal({ s, le, onClose, onPick }: { s: AppState; le: LoggedExercise
           Keep this swap for future sessions
         </label>
       )}
-      {alts.map((id) => {
-        const d = ex(id);
-        const st = s.exState[id];
-        return (
-          <button key={id} className="optrow" onClick={() => onPick(id, keep)}>
-            <span><strong>{d.name}</strong><br /><span className="small muted">{d.muscles.join(', ')} · {d.equip}</span></span>
-            {st?.weight ? <span className="small muted">last {fmtLoad(id, st.weight, s.profile!.units)}</span> : null}
-          </button>
-        );
-      })}
+      {browse ? <ExercisePicker onSelect={(id) => onPick(id, keep)} initialMuscle={def.muscles[0] ?? 'all'} /> : (
+        <>
+          {alts.map((id) => {
+            const d = ex(id);
+            const st = s.exState[id];
+            return (
+              <button key={id} className="optrow" style={{ justifyContent: 'flex-start', gap: 14 }} onClick={() => onPick(id, keep)}>
+                {d.img ? <img src={imgUrls(d.img)[0]} alt="" style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 8, flex: 'none' }} /> : <span style={{ width: 84, flex: 'none' }}><MuscleMap primary={d.muscles} secondary={d.secondary} height={56} /></span>}
+                <span className="grow"><strong>{d.name}</strong><br /><span className="small muted">{d.muscles.map(muscleLabel).join(', ')} · {d.equip}</span></span>
+                {st?.weight ? <span className="small muted">last {fmtLoad(id, st.weight, s.profile!.units)}</span> : null}
+              </button>
+            );
+          })}
+          <button className="btn2" onClick={() => setBrowse(true)}>Browse all {def.muscles[0] ? `${muscleLabel(def.muscles[0])} ` : ''}exercises</button>
+        </>
+      )}
       {le.slotKey && s.swaps[le.slotKey] && (
         <button className="btn2" onClick={() => { setState((st) => { const sw = { ...st.swaps }; delete sw[le.slotKey!]; return { ...st, swaps: sw }; }); onClose(); }}>Restore program default from next session</button>
       )}

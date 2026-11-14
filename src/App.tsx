@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStore } from './lib/store';
 import Feedback from './screens/Feedback';
+import Library from './screens/Library';
 import Mobility from './screens/Mobility';
 import Outdoor from './screens/Outdoor';
 import Program from './screens/Program';
@@ -34,6 +35,7 @@ export default function App() {
       <SideNav current={screen.name} go={go} />
       {screen.name === 'today' && <Today go={go} />}
       {screen.name === 'program' && <Program go={go} />}
+      {screen.name === 'library' && <Library go={go} />}
       {screen.name === 'outdoor' && <Outdoor go={go} initialType={screen.type} />}
       {screen.name === 'progress' && <Progress />}
       {screen.name === 'setup' && <Setup go={go} />}

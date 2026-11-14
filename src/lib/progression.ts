@@ -12,7 +12,8 @@ const num = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1).repla
 export function fmtLoad(exId: string, w: number, u: Units) {
   const def = ex(exId);
   if (def.equip === 'band') return 'band';
-  if (def.equip === 'bodyweight' || w <= 0) return 'bodyweight';
+  if (def.equip === 'bodyweight') return 'bodyweight';
+  if (w <= 0) return 'your pick';
   return `${def.pair ? '2×' : ''}${num(w)} ${unitW(u)}`;
 }
 

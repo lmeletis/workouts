@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { cacheAllPhotos } from '../exercise-ui';
 import { mondayOf, todayISO } from '../lib/program';
 import { convertUnits, unitW } from '../lib/progression';
 import { emptyState, exportBackup, getState, importBackup, setState, useStore } from '../lib/store';
@@ -19,6 +20,7 @@ export default function Setup({ go, firstRun }: { go: Go; firstRun?: boolean }) 
   const [d, setD] = useState<Omit<Profile, 'startDate' | 'cycle'>>(() => s.profile ?? DEFAULT);
   const [kbText, setKbText] = useState(d.kettlebells.join(', '));
   const [confirm, setConfirm] = useState<null | 'restart' | 'reset'>(null);
+  const [photos, setPhotos] = useState<number | null>(null);
   const [toast, showToast] = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const set = <K extends keyof typeof d>(k: K, v: (typeof d)[K]) => setD((x) => ({ ...x, [k]: v }));
@@ -136,6 +138,10 @@ export default function Setup({ go, firstRun }: { go: Go; firstRun?: boolean }) 
           <section className="card">
             <p className="lbl">Install on iPad</p>
             <span className="small">In Safari tap <strong>Share</strong> → <strong>Add to Home Screen</strong>. It then opens full-screen and works offline.</span>
+            <button className="btn2" disabled={photos !== null && photos < 100} onClick={() => {
+              setPhotos(0);
+              cacheAllPhotos((d, t) => setPhotos(Math.round((d / t) * 100))).then(() => showToast('All exercise photos saved for offline'));
+            }}>{photos === null ? 'Save all exercise photos offline (~19 MB)' : photos < 100 ? `Saving photos… ${photos}%` : 'Photos saved ✓'}</button>
             <button className="btn2 danger" onClick={() => setConfirm('reset')}>Erase all data…</button>
           </section>
         </div>

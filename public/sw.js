@@ -1,5 +1,5 @@
 // Offline cache: serve from cache when available, refresh in the background.
-const CACHE = 'train-v1';
+const CACHE = 'train-v2';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest', './icon.svg'])));

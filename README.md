@@ -24,3 +24,9 @@ npm run build      # static site in dist/
 
 Every push to `main` deploys to https://lmeletis.github.io/workouts/ via GitHub Actions. Open it in Safari,
 then Share → Add to Home Screen. It works offline after the first load.
+
+## Credits
+
+Exercise photos, instructions and muscle data come from the public-domain
+[Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (Unlicense).
+Regenerate the catalog with `scripts/build_catalog.py`.

@@ -7,7 +7,13 @@ import type { Muscle } from '../lib/types';
 import { LineChart, mmss, Seg } from '../ui';
 
 const LIFTS = ['squat', 'bench', 'deadlift', 'ohp'];
-const MUSCLES: Muscle[] = ['quads', 'hamstrings', 'glutes', 'chest', 'back', 'shoulders', 'arms', 'core'];
+const GROUPS = ['Quads', 'Hamstrings', 'Glutes', 'Hips', 'Chest', 'Back', 'Shoulders', 'Arms', 'Core', 'Calves'] as const;
+type Group = (typeof GROUPS)[number];
+const GROUP_OF: Record<Muscle, Group> = {
+  quadriceps: 'Quads', hamstrings: 'Hamstrings', glutes: 'Glutes', adductors: 'Hips', abductors: 'Hips', chest: 'Chest',
+  lats: 'Back', 'middle back': 'Back', 'lower back': 'Back', traps: 'Back', neck: 'Back', shoulders: 'Shoulders',
+  biceps: 'Arms', triceps: 'Arms', forearms: 'Arms', abdominals: 'Core', calves: 'Calves',
+};
 
 export default function Progress() {
   const s = useStore();
@@ -27,10 +33,15 @@ export default function Progress() {
 
   const monday = mondayOf(today);
   const weekSets = useMemo(() => {
-    const out = Object.fromEntries(MUSCLES.map((m) => [m, 0])) as Record<Muscle, number>;
+    const out = Object.fromEntries(GROUPS.map((g) => [g, 0])) as Record<Group, number>;
     s.workouts.filter((w) => w.date >= monday).forEach((w) => w.exercises.forEach((e) => {
       const n = workSets(e).filter((x) => x.done).length;
-      ex(e.exId).muscles.forEach((m, i) => (out[m] += i === 0 ? n : n * 0.5));
+      const d = ex(e.exId);
+      // Full credit to primary muscle groups, half to secondary (each group counted once).
+      const pri = new Set(d.muscles.map((m) => GROUP_OF[m]));
+      const sec = new Set(d.secondary.map((m) => GROUP_OF[m]).filter((g) => !pri.has(g)));
+      pri.forEach((g) => (out[g] += n));
+      sec.forEach((g) => (out[g] += n * 0.5));
     }));
     return out;
   }, [s.workouts, monday]);
@@ -83,9 +94,9 @@ export default function Progress() {
         <div className="aside" style={{ width: 380 }}>
           <section className="card" style={{ gap: 8 }}>
             <p className="lbl">This week’s sets by muscle · aim 12–20</p>
-            {MUSCLES.map((m) => (
+            {GROUPS.map((m) => (
               <div key={m} className="row small" style={{ gap: 10 }}>
-                <span style={{ width: 86, textTransform: 'capitalize' }}>{m}</span>
+                <span style={{ width: 86 }}>{m}</span>
                 <div className="bar grow" style={{ height: 10 }}><div style={{ width: `${Math.min(100, (weekSets[m] / 20) * 100)}%`, background: weekSets[m] >= 12 ? 'var(--accent)' : '#5EAAA3' }} /></div>
                 <span style={{ width: 28, textAlign: 'right', fontWeight: 600 }}>{Math.round(weekSets[m])}</span>
               </div>

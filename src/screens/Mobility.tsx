@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { ExercisePhotos, MuscleChips, MuscleMap } from '../exercise-ui';
 import { FLOWS, flowSteps } from '../lib/library';
 import { daysBetween, todayISO } from '../lib/program';
 import { unitL } from '../lib/progression';
@@ -83,14 +84,20 @@ export default function Mobility({ go, flowId, back, workoutItem }: { go: Go; fl
       <div className="body">
         <div className="split">
           <section className="card grow" style={{ gap: 18, minHeight: 520 }}>
-            <div style={{ flex: 1, minHeight: 220, borderRadius: 12, background: 'var(--mob-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24, textAlign: 'center' }}>
-              <div className="lbl" style={{ color: 'var(--mob)' }}>{step.side ? `${step.side} side` : 'Both sides'}</div>
-              <div style={{ fontSize: 96, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{mmss(remaining)}</div>
-              <div style={{ fontSize: 15, color: 'var(--mob)' }}>{end === null ? (remaining === step.move.sec ? 'Tap Start when you’re in position' : 'Paused') : 'Breathe slow — 4 s in, 6 s out'}</div>
+            <div className="row wrap" style={{ gap: 16, alignItems: 'stretch' }}>
+              <div style={{ flex: '1 1 340px', minHeight: 240, borderRadius: 12, background: '#fff', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+                {step.move.img ? <ExercisePhotos imgId={step.move.img} height={240} /> : <MuscleMap primary={step.move.muscles} height={220} />}
+              </div>
+              <div style={{ flex: '1 1 260px', minHeight: 240, borderRadius: 12, background: 'var(--mob-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 20, textAlign: 'center' }}>
+                <div className="lbl" style={{ color: 'var(--mob)' }}>{step.side ? `${step.side} side` : 'Both sides'}</div>
+                <div style={{ fontSize: 88, fontWeight: 700, color: 'var(--accent)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{mmss(remaining)}</div>
+                <div style={{ fontSize: 15, color: 'var(--mob)' }}>{end === null ? (remaining === step.move.sec ? 'Tap Start when you’re in position' : 'Paused') : 'Breathe slow — 4 s in, 6 s out'}</div>
+              </div>
             </div>
             <div>
               <h1 className="h1">{step.move.name}</h1>
               <p style={{ color: 'var(--text2)', marginTop: 6 }}>{step.move.cue}</p>
+              <div style={{ marginTop: 8 }}><MuscleChips d={{ muscles: step.move.muscles, secondary: [] }} small /></div>
             </div>
             <div className="bar"><div style={{ width: `${((step.move.sec - remaining) / step.move.sec) * 100}%` }} /></div>
             <div className="row wrap">
