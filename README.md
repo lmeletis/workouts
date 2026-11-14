@@ -22,5 +22,5 @@ npm run build      # static site in dist/
 
 ## Install on iPad
 
-Run `npm run deploy` to publish to GitHub Pages, open the site in Safari,
+Every push to `main` deploys to https://lmeletis.github.io/workouts/ via GitHub Actions. Open it in Safari,
 then Share → Add to Home Screen. It works offline after the first load.
