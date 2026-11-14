@@ -22,5 +22,5 @@ npm run build      # static site in dist/
 
 ## Install on iPad
 
-Host `dist/` on any HTTPS static host (e.g. GitHub Pages), open it in Safari,
+Run `npm run deploy` to publish to GitHub Pages, open the site in Safari,
 then Share → Add to Home Screen. It works offline after the first load.
